@@ -31,5 +31,9 @@ class Getr
   def default
     yield(res.status=404) if res.status==200 && res.body.empty?
   end
+
+  def self.settings
+     @settings ||= {}
+  end
 end
 
