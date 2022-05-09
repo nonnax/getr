@@ -21,6 +21,10 @@ Getr.new do
     res.redirect '/hello'
   end
 
+  on '/any' do
+    res.write 'any'
+  end
+
   default do # when no match found
     res.write 'no mo'
   end

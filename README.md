@@ -1,1 +1,1 @@
-Getr - the GET rack-router
+Getr - the (primarily-GET) rack-router

@@ -30,6 +30,21 @@ class TestApp < Test::Unit::TestCase
     assert_equal last_response.status, 404
   end
 
+  def test_any_get
+    get '/any'
+    assert_equal last_response.status,200
+  end
+
+  def test_any_put
+    put '/any'
+    assert_equal last_response.status,200
+  end
+
+  def test_any_post
+    post '/any'
+    assert_equal last_response.status,200
+  end
+
   def test_home_post
     post '/home'
     assert_equal last_response.status, 404

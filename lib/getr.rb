@@ -14,12 +14,18 @@ class Getr
     res.finish
   end
 
-  def get path, **opts
-    yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/) && req.get?
+  def get path, **opts, &block
+    # run on matched path && /GET
+    on(path, **opts, &block) if req.get?
+  end
+
+  def on path, **opts
+    # run on matched path
+    yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/)
   end
 
   def capture(**opts)
-    opts.merge(req.params.transform_keys(&:to_sym)).values  
+    opts.merge(req.params.transform_keys(&:to_sym)).values
   end
 
   def default
