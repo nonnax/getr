@@ -1,7 +1,10 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-05-09 01:37:27 +0800
 class Getr
+  class << self; attr_accessor :settings end
+
   attr :res, :req
+
   def initialize(&block)
     @block=block
   end
@@ -32,8 +35,5 @@ class Getr
     yield(res.status=404) if res.status==200 && res.body.empty?
   end
 
-  def self.settings
-     @settings ||= {}
-  end
 end
 
