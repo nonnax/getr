@@ -3,8 +3,7 @@
 class Getr
   T=Hash.new{|h,k|h[k]=k.transform_keys(&:to_sym)}
   class R<Rack::Response; end #no-doc
-  class << self; attr_accessor :settings end
-  @settings = Hash.new{|h,k| h[k]={}}
+  def self.settings;  @settings ||= Hash.new{|h,k| h[k]={} } end
 
   attr :res, :req, :params
 

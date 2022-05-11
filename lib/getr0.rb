@@ -1,11 +1,10 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-05-09 01:37:27 +0800
-# unlike original getr get, post, etc., simply returns their last values
+# getr clone except that get, post, etc., methods returns their final values
 class Getr
   T=Hash.new{|h,k|h[k]=k.transform_keys(&:to_sym)}
   class R<Rack::Response; end #no-doc
-  class << self; attr_accessor :settings end
-  @settings = Hash.new{|h,k| h[k]={}}
+  def self.settings;  @settings ||= Hash.new{|h,k| h[k]={} } end
 
   attr :res, :req, :params
 
