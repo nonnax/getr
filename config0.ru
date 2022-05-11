@@ -21,8 +21,8 @@ Getr.new do
     res.redirect '/hello'
   end
 
-  on '/any' do
-    'any'
+  on '/any/:id' do |id|
+    'any'+String(id)
   end
 
   default do # when no match found

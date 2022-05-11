@@ -31,17 +31,17 @@ class TestApp < Test::Unit::TestCase
   end
 
   def test_any_get
-    get '/any'
+    get '/any/get'
     assert_equal last_response.status,200
   end
 
   def test_any_put
-    put '/any'
+    put '/any/put'
     assert_equal last_response.status,200
   end
 
   def test_any_post
-    post '/any'
+    post '/any/post'
     assert_equal last_response.status,200
   end
 

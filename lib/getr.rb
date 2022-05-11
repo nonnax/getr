@@ -1,11 +1,12 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-05-09 01:37:27 +0800
 class Getr
+  T=Hash.new{|h,k|h[k]=k.transform_keys(&:to_sym)}
   class R<Rack::Response; end #no-doc
   class << self; attr_accessor :settings end
   @settings = Hash.new{|h,k| h[k]={}}
 
-  attr :res, :req
+  attr :res, :req, :params
 
   def initialize(&block)
     @block=block
@@ -26,13 +27,25 @@ class Getr
     on(path, **opts, &block) if req.get?
   end
 
-  def on path, **opts
+  def on u, **opts
     # run on matched path
-    yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/)
+    yield(*@capture) if match(u, **opts)
   end
 
-  def capture(**opts)
-    opts.merge(req.params.transform_keys(&:to_sym)).values
+  def match(u, **opts)
+    req.path_info.match(pattern(u))
+       .tap { |md|
+          if md
+            @params = opts.merge(T[req.params])
+            @captures = Array(md&.captures)
+            @captures+= @params.values
+            @captures.compact!
+          end
+       }
+  end
+
+  def pattern(u)
+    u.gsub(/:\w+/, '([^/?#]+)').then{ |s| %r{^#{s}/?$} }
   end
 
   def default

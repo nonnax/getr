@@ -2,11 +2,12 @@
 # Id$ nonnax 2022-05-09 01:37:27 +0800
 # unlike original getr get, post, etc., simply returns their last values
 class Getr
+  T=Hash.new{|h,k|h[k]=k.transform_keys(&:to_sym)}
   class R<Rack::Response; end #no-doc
   class << self; attr_accessor :settings end
   @settings = Hash.new{|h,k| h[k]={}}
 
-  attr :res, :req
+  attr :res, :req, :params
 
   def initialize(&block)
     @block=block
@@ -28,14 +29,24 @@ class Getr
     on(path, **opts, &block) if req.get?
   end
 
-  def on path, **opts
+  def on u, **opts
     return if @body
     # run on matched path
-    @body=yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/)
+    @body = yield(*@captures) if match(u, **opts)
   end
 
-  def capture(**opts)
-    opts.merge(req.params.transform_keys(&:to_sym)).values
+  def match(u, **opts)
+    req.path_info.match(pattern(u))
+       .tap { |md|
+          if md
+            @params  = opts.merge(T[req.params])
+            @captures=( Array(md&.captures) + @params.values ).compact
+          end
+       }
+  end
+
+  def pattern(u)
+    u.gsub(/:\w+/, '([^/?#]+)').then{ |s| %r{^#{s}/?$} }
   end
 
   def default
