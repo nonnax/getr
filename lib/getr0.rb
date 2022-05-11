@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # Id$ nonnax 2022-05-09 01:37:27 +0800
+# unlike original getr get, post, etc., simply returns their last values
 class Getr
   class R<Rack::Response; end #no-doc
   class << self; attr_accessor :settings end
@@ -14,8 +15,9 @@ class Getr
   def call(env)
     @req=Rack::Request.new(env)
     @res=Rack::Response.new(nil, 200)
+    @body=nil
     catch(:halt){
-      instance_eval(&@block)
+      instance_eval(&@block).then{ res.write @body if @body }
       default{ res.write 'Not Found' }
       return res.finish
     }.call(env)
@@ -27,8 +29,9 @@ class Getr
   end
 
   def on path, **opts
+    return if @body
     # run on matched path
-    yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/)
+    @body=yield(*capture(**opts)) if req.path_info.match?(/#{path}\/?\Z/)
   end
 
   def capture(**opts)
@@ -36,12 +39,13 @@ class Getr
   end
 
   def default
-    return unless res.body.empty?
-    yield(res.status=404) if res.status==200
+    return if @body
+    @body=yield(res.status=404) if res.status==200
   end
 
   def halt(app)
     throw :halt, app
   end
+
 end
 

@@ -5,15 +5,11 @@ require 'erb'
 
 class ERBView
   def self.setup(app)
-    app.settings ||= {}
     app.settings[:layout]='layout'
-    app.settings[:views] ||= File.expand_path("views", Dir.pwd)
-    @settings=app.settings
+    app.settings[:views] = File.expand_path("views", Dir.pwd)
+    @app=app
     app.define_method :erb do | page, **opts |
       res.write ERBView.erb(page, **opts)
-    end
-    app.define_singleton_method :views do |&block|
-      ERBView.views(&block)
     end
   end
 
@@ -23,20 +19,12 @@ class ERBView
     new(page, **data).erb
   end
 
-  def self.views(&block)
-    instance_eval(&block)
-  end
-
-  def self.set(k, v)
-    settings[k]=v
-  end
-
   def self.settings
-    @settings ||= {}
+    @app.settings
   end
 
   def settings
-    self.class.settings
+    ERBView.settings
   end
 
   def template_path(f)

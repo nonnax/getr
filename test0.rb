@@ -6,7 +6,7 @@ require 'rack'
 require 'rack/test'
 require 'test/unit'
 
-OUTER_APP = Rack::Builder.parse_file('config.ru').first
+OUTER_APP = Rack::Builder.parse_file('config0.ru').first
 
 class TestApp < Test::Unit::TestCase
   include Rack::Test::Methods
