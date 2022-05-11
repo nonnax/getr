@@ -18,7 +18,7 @@ Getr.new do
   end
 
   get '/r' do
-    res.redirect '/hello'
+    res.redirect '/greet'
   end
 
   on '/any/:id' do |id|
@@ -28,6 +28,8 @@ Getr.new do
   default do # when no match found
     res.write 'no mo'
   end
+
+  pp params
 
 end
 
