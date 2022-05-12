@@ -11,4 +11,4 @@ git_source(:github) do |repo_name|
 end
 
 
-# gem 'getr', :github => 'nonnax/getr'
+gem 'getr', :github => 'nonnax/getr'

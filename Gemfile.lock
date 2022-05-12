@@ -1,0 +1,18 @@
+GIT
+  remote: https://github.com/nonnax/getr.git
+  revision: 5207aacdec0e38513acc004e47e06588ed057642
+  specs:
+    getr (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  getr!
+
+BUNDLED WITH
+   2.3.7
