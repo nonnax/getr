@@ -7,8 +7,8 @@ A=
 Getr.new do
   res.headers['Content-type']='text/html'
 
-  get '/' do
-    res.write 'hi '
+  get '/', name: 'nald' do |name|
+    res.write 'hi '+String(name)
   end
 
   get '/greet', name: 'simpler' do |name|

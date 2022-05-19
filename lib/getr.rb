@@ -28,7 +28,7 @@ class Getr
 
   def on u, **opts
     # run on matched path
-    yield(*@capture) if match(u, **opts)
+    yield(*@captures) if match(u, **opts)
   end
 
   def match(u, **opts)
