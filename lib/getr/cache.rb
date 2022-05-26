@@ -2,7 +2,7 @@
 # Id$ nonnax 2022-05-10 10:12:49 +0800
 require 'dalli'
 
-class Numa
+class Getr
   module Cache
     def dc(expires_in: 60*60*24 , compress:true)
       options = { expires_in:, compress: }
