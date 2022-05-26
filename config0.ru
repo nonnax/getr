@@ -9,7 +9,7 @@ Getr.new do
   res.headers['Content-type']='text/html'
 
   get '/', name: 'nald' do |name|
-    erb 'hi '+String(name)
+    erb :greet, data: 'hi '+String(name)
   end
 
   get '/greet', name: 'simpler' do |name|
