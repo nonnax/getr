@@ -2,15 +2,20 @@
 # Id$ nonnax 2022-05-10 10:12:49 +0800
 require 'dalli'
 
-module Cache
-  def dc
-    @dc ||= Dalli::Client.new('localhost:11211')
-  end
-  def cache(key)
-    unless value = dc.get(key)
-      value = yield
-      dc.set(key, value)
+class Numa
+  module Cache
+    def dc(expires_in: 60*60*24 , compress:true)
+      options = { expires_in:, compress: }
+      @dc ||= Dalli::Client.new('localhost:11211', **options)
     end
-    value
+    def cache(*key, **opts)
+      key=key.join
+      unless value=dc.get(key, **opts)
+        value=yield
+        dc.set(key, value)
+      end
+      value
+    end
   end
+  include Cache
 end
