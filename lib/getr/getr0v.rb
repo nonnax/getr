@@ -20,7 +20,7 @@ class Getr
 
    def render(text, **opts)
      new_b = binding.dup.instance_eval do
-       tap { opts.each { |k, v| p [k, v]; local_variable_set k, v } }
+       tap { opts.each { |k, v| local_variable_set k, v } }
      end
      ERB.new(text).result(new_b)
    end
