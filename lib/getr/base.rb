@@ -55,5 +55,11 @@ class Getr
   def halt(app)
     throw :halt, app
   end
+
+  def self.plugin(mod)
+    include mod
+    mod.setup(self) if mod.respond_to?(:setup)
+  end
+
 end
 

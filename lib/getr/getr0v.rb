@@ -1,60 +1,36 @@
 #!/usr/bin/env ruby
-
+# 
 # Id$ nonnax 2022-03-01 15:27:49 +0800
 require 'erb'
 
-class ERBView
-  def self.setup(app)
-    app.settings[:layout]='layout'
-    app.settings[:views] = File.expand_path("views", Dir.pwd)
-    @app=app
-    app.define_method :erb do | page, **opts |
-      ERBView.erb(page, **opts)
-    end
-  end
+class Getr
+ settings[:layout]='layout'
+ settings[:views] = File.expand_path("views", Dir.pwd)
 
-  attr :data, :params
+ module View
+   PATH = Hash.new { |h, k| h[k] = File.expand_path("#{Getr.settings[:views]}/#{k}.erb", Dir.pwd) }
+   CACHE = Thread.current[:_view_cache] = Hash.new { |h, k| h[k] = String(IO.read(k)) }
 
-  def self.erb(page, **data)
-    new(page, **data).erb
-  end
+   def erb(doc, **locals)
+     res.headers[Rack::CONTENT_TYPE] ||= 'text/html; charset=utf-8;'
+     prepare(doc, **locals){|doc, layout|
+       render(layout, **locals){ render(doc, **locals) } 
+     }
+   end
 
-  def self.settings
-    @app.settings
-  end
+   def render(text, **opts)
+     new_b = binding.dup.instance_eval do
+       tap { opts.each { |k, v| p [k, v]; local_variable_set k, v } }
+     end
+     ERB.new(text).result(new_b)
+   end
 
-  def settings
-    ERBView.settings
-  end
-
-  def template_path(f)
-     File.join(settings[:views], "#{f}.erb")
-  end
-
-  def initialize(page, **opts)
-    @params = @data = opts.dup
-    layout = params.fetch(:layout, settings[:layout])
-    l, @page = [layout, page].map do |f|
-      template_path(f)
-    end
-
-    @template = erbview_cache[File.read(@page)] rescue page.to_s
-    @layout   = erbview_cache[File.read(l)] rescue '<%=yield%>'
-  end
-
-  def erb
-    _render(@layout) {
-        _render(@template, binding)
-      }
-  end
-
-  def _render(f, b=binding)
-    ERB.new(f).result(b)
-  end
-
-  def erbview_cache
-    Thread.current[:_erbview] ||= Hash.new{|h,k| h[k]=k}
-  end
-
+   def prepare(doc, **locals)
+     ldir =   locals.fetch(:layout, Getr.settings[:layout])
+     doc  =   CACHE[PATH[doc]]  if doc.is_a?(Symbol)
+     layout = CACHE[PATH[ldir]] rescue '<%=yield%>'
+     yield *[String(doc), layout]
+   end
+ end
+ include View
 end
-

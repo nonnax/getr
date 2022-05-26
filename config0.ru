@@ -5,10 +5,11 @@ require 'json'
 
 A=
 Getr.new do
+  
   res.headers['Content-type']='text/html'
 
   get '/', name: 'nald' do |name|
-    'hi '+String(name)
+    erb 'hi '+String(name)
   end
 
   get '/greet', name: 'simpler' do |name|

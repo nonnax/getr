@@ -6,6 +6,10 @@ class Getr
   class R<Rack::Response; end #no-doc
   def self.settings;  @settings ||= Hash.new{|h,k| h[k]={} } end
 
+  def settings
+    Getr.settings
+  end
+  
   attr :res, :req, :params
 
   def initialize(&block)
@@ -57,5 +61,10 @@ class Getr
     throw :halt, app
   end
 
+  def self.plugin(mod)
+    include mod
+    extend  mod::ClassMethods if defined?(mod::ClassMethods)
+    mod.setup(self) if mod.respond_to?(:setup)
+  end
 end
 
